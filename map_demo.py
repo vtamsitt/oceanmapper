@@ -21,7 +21,7 @@ vmax=210
 
 #optional input arguments
 
-map3d_surface(xdata,ydata,zdata,scalardata,mode,vmin,vmax)
-
+mlab=map3d_surface(xdata,ydata,zdata,scalardata,mode,vmin,vmax)
+mlab.show()
 
 

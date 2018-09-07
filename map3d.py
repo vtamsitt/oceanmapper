@@ -129,7 +129,7 @@ def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-re
         mlab.view(distance = 'auto')
     else:
         mlab.view(azimuth = set_view[0], elevation = set_view[1], distance = set_view[2], focalpoint = set_view[3])
-    mlab.show()
+    mlab
 
     return
 
