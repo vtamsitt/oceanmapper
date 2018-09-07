@@ -1,15 +1,17 @@
 
 
 
-def map3d_surface(xdata,ydata,zdata,scalardata,mode,vmin,vmax,data_cmap='blue-red',data_alpha=1,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
+def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-red',data_alpha=1,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
-    xdata = longitude values for data array
-    ydata = latitude values for data array
-    zdata = depth values for data array
-    vmin = colorbar minimum for data
-    vmax = colorbar maximum for data
+    mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    xdata = (1D numpy array) longitude values for data array
+    ydata = (1D numpy array) latitude values for data array
+    zdata = (1D numpy array) depth values for data array
+    scalardata = (2D numpy array) scalar field to plot colors on surface
+    vmin = (float) colorbar minimum for data
+    vmax = (float) colorbar maximum for data
     data_cmap = colormap for data surface, default is blue-red
-    data_alpha = opacity for data surface from 0 to 1, default is 1
+    data_alpha = (float or int) opacity for data surface from 0 to 1, default is 1
     topo = optional; input topography file, default is etopo 30 
     topo_limits = optional; longitude and latitude limits for 3d topography plot [lon min, lon max, lat min, lat max], longitudes range -180 to 180, latitude -90 to 90, default is entire globe
     zscale = optional; change vertical scaling for plotting, default is 500
