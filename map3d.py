@@ -1,3 +1,7 @@
+#import dependent modules
+import sys
+import numpy as np
+from mayavi import mlab
 
 
 
@@ -20,10 +24,6 @@ def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-re
     set_view = optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
     """
     
-    #import dependent modules
-    import sys
-    import numpy as np
-    from mayavi import mlab
 
     #load topo data
     data = np.load('etopo1_30min.npz')
