@@ -92,7 +92,9 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
     elif mode is 'rectangle':
         y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
         z = c/zscale
-    m = mlab.mesh(x, y, z, colormap=topo_cmap,vmin=tvmin/zscale,vmax=tvmax/zscale)
+    
+    #make bathymetry mesh
+    m = mlab.mesh(x, y, z, scalars = z, colormap=topo_cmap,vmin=tvmin/zscale,vmax=tvmax/zscale)
     
     #optional: reverse bathymetry colormap
     if topo_cmap_reverse is True:
@@ -112,17 +114,17 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
         phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
  
         if mode is 'sphere':
-            x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
-            y = np.sin(phi) * np.sin(theta[::-1]) * (1 + c/zscale)
-            z = np.cos(phi) * (1 + c/zscale)
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
+            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
         elif mode is 'cylinder':
-            x = np.sin(phi) * np.cos(theta[::-1])
-            y = np.sin(phi) * np.sin(theta[::-1])
-            z = c/zscale
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
+            z_iso = zdata/zscale
     
         elif mode is 'rectangle':
-            y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
-            z = c/zscale
+            y, x = np.meshgrid(phi_iso,theta_iso)
+            z = zdata/zscale
     
         m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
         m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
