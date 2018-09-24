@@ -5,13 +5,13 @@ from mayavi import mlab
 
 
 
-def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-red',data_alpha=1,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
+def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
     mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
-    xdata = (1D numpy array) longitude values for data array
-    ydata = (1D numpy array) latitude values for data array
-    zdata = (1D numpy array) depth values for data array
-    scalardata = (2D numpy array) scalar field to plot colors on surface
+    xdata = optional; (1D numpy array) longitude values for data array
+    ydata = optional; (1D numpy array) latitude values for data array
+    zdata = optional; (1D numpy array) depth values for data array
+    scalardata = optional; (2D numpy array) scalar field to plot colors on surface
     vmin = (float) colorbar minimum for data
     vmax = (float) colorbar maximum for data
     data_cmap = colormap for data surface, default is blue-red
@@ -23,8 +23,8 @@ def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-re
     topo_cmap_reverse = optional; reverse topography colormap, default is false
     set_view = optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
     """
-    
-
+    #TODO expand/clean descriptions
+        
     #load topo data
     data = np.load('etopo1_30min.npz')
     xraw = data['x']
@@ -65,34 +65,6 @@ def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-re
     phi, theta = np.meshgrid(phi,theta)
    
 
-    #prep data grid
-    phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
- 
-    if mode is 'sphere':
-        x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
-        y = np.sin(phi) * np.sin(theta[::-1]) * (1 + c/zscale)
-        z = np.cos(phi) * (1 + c/30000.)
-    
-        x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
-        y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
-        z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
-    
-    elif mode is 'cylinder':
-        x = np.sin(phi) * np.cos(theta[::-1])
-        y = np.sin(phi) * np.sin(theta[::-1])
-        z = c/zscale
-
-        x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
-        y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
-        z_iso = -zdata/zscale
-    
-    elif mode is 'rectangle':
-        y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
-        z = c/zscale
-    
-        y_iso,z_iso = np.meshgrid(ydata,zdata)
-        x_iso,z_iso = np.meshgrid(xdata,zdata) 
-        z_iso =-z_iso/zscale
 
     if topo_vmin is None:
         tvmin = -6000
@@ -120,10 +92,41 @@ def map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin,vmax,data_cmap='blue-re
         sl = mlab.mesh(x, y, z,mask = z<0,color =land_color)
 
 
-    #plot data surface
-    m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
-    m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+    #optional: plot data surface
+    if xdata is not None and ydata is not None and zdata is not None:
+        #TODO add an error message if not all data fields are provided
+        #prep data grid
+        phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
+ 
+        if mode is 'sphere':
+            x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
+            y = np.sin(phi) * np.sin(theta[::-1]) * (1 + c/zscale)
+            z = np.cos(phi) * (1 + c/30000.)
     
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
+            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
+    
+        elif mode is 'cylinder':
+            x = np.sin(phi) * np.cos(theta[::-1])
+            y = np.sin(phi) * np.sin(theta[::-1])
+            z = c/zscale
+
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
+            z_iso = -zdata/zscale
+    
+        elif mode is 'rectangle':
+            y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
+            z = c/zscale
+    
+            y_iso,z_iso = np.meshgrid(ydata,zdata)
+            x_iso,z_iso = np.meshgrid(xdata,zdata) 
+            z_iso =-z_iso/zscale
+        m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
+        m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+        #TODO add option without scalardata as input to mlab.mesh
+ 
     #optional: change mayavi camera settings
     if set_view is None:
         mlab.view(distance = 'auto')
