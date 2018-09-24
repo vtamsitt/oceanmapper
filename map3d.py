@@ -79,6 +79,19 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
     mlab.figure(size = (1024,768),bgcolor = (1,1,1), fgcolor = (0.5, 0.5, 0.5))
     mlab.clf()
     # Plot Bathymetry mesh
+    if mode is 'sphere':
+        x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
+        y = np.sin(phi) * np.sin(theta[::-1]) * (1 + c/zscale)
+        z = np.cos(phi) * (1 + c/zscale)
+    
+    elif mode is 'cylinder':
+        x = np.sin(phi) * np.cos(theta[::-1])
+        y = np.sin(phi) * np.sin(theta[::-1])
+        z = c/zscale
+    
+    elif mode is 'rectangle':
+        y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
+        z = c/zscale
     m = mlab.mesh(x, y, z, colormap=topo_cmap,vmin=tvmin/zscale,vmax=tvmax/zscale)
     
     #optional: reverse bathymetry colormap
@@ -101,28 +114,16 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
         if mode is 'sphere':
             x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
             y = np.sin(phi) * np.sin(theta[::-1]) * (1 + c/zscale)
-            z = np.cos(phi) * (1 + c/30000.)
-    
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
-            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
-            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
-    
+            z = np.cos(phi) * (1 + c/zscale)
         elif mode is 'cylinder':
             x = np.sin(phi) * np.cos(theta[::-1])
             y = np.sin(phi) * np.sin(theta[::-1])
             z = c/zscale
-
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
-            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
-            z_iso = -zdata/zscale
     
         elif mode is 'rectangle':
             y, x = np.meshgrid(phi_deg[phi_ind1:phi_ind2],theta_deg[theta_ind1:theta_ind2])
             z = c/zscale
     
-            y_iso,z_iso = np.meshgrid(ydata,zdata)
-            x_iso,z_iso = np.meshgrid(xdata,zdata) 
-            z_iso =-z_iso/zscale
         m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
         m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
         #TODO add option without scalardata as input to mlab.mesh
