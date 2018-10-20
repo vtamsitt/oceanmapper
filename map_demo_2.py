@@ -17,7 +17,7 @@ tlimits=[lon_min, lon_max, lat_min, lat_max]
 zs  = 40000
 tvmin = -100 
 tvmax = 7000
-lcolor = (0.5, 0.6, 0.5)
+lcolor = (0.5, 0.52, 0.52)
 
 mlab=map3d_surface(mode,zscale=zs,topo_vmin = tvmin, topo_vmax= tvmax, topo_cmap_reverse=True,land_constant=True,land_color=lcolor)
 embed()
