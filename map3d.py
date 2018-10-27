@@ -242,7 +242,7 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
         m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
 
 
-def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color=(0,0,0),alpha=1.0,mode='2darrow', scale=1, spacing=8., set_view=None):
+def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color=(0,0,0),alpha=1.0,vector_mode='2darrow', scale=1, spacing=8., set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -252,10 +252,11 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color
     udata: 2D or 3D array; u vector component
     vdata: 2D or 3D array; v vector component
     wdata: 2D or 3D array; w vector component
+    vector_mode: string, optional; style of vector plot
     color: colormap or rgb triplet,optional; color of quiver plot default is black (0,0,0). 
     alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
     scale: float or int, optional; scaling for length of vectors, default is 1. 
-    spacing: int, optional; If supplied, only one out of ‘spacing’ data points is displayed. This option is useful to reduce the number of points displayed on large datasets Must be an integer (int or long) or None
+    spacing: int, optional; If supplied, only one out of 'spacing' data points is displayed. This option is useful to reduce the number of points displayed on large datasets Must be an integer (int or long) or None
     set_view: array_like, optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
     """
         
@@ -291,7 +292,7 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color
         print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
     
     #do quiver plot 
-    mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=quiver_color,mode=quiver_mode,opacity=opacity,scale_factor=quiver_scale,mask_points=quiver_spacing)   
+    mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=color,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
  
     #optional: change mayavi camera settings
 
