@@ -5,10 +5,11 @@ from mayavi import mlab
 
 
 
-def topography3d(mode,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
+def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
     topo: array_like, optional; input topography file, default is etopo 30 
+##TODO: need to define sign of topography 
     topo_limits: array_like, optional; longitude and latitude limits for 3d topography plot [lon min, lon max, lat min, lat max], longitudes range -180 to 180, latitude -90 to 90, default is entire globe
     zscale: scalar, optional; change vertical scaling for plotting, default is 500
     topo_cmap: string, optional; set colormap for topography, default is bone 
@@ -19,11 +20,19 @@ def topography3d(mode,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo
     """
         
     #load topo data
-    data = np.load('etopo1_30min.npz')
-    xraw = data['x']
-    yraw = data['y']
-    zraw = np.swapaxes(data['z'][:,:],0,1)
-    zraw[zraw>0]=0.
+    if topo_x is not None and topo_y is not None and topo_z is not None:
+        xraw = topo_x
+        yraw = topo_y
+        zraw = topo_z
+
+    else:
+        tfile = np.load('etopo1_30min.npz')
+        xraw = tfile['x']
+        yraw = tfile['y']
+        zraw = np.swapaxes(tfile['z'][:,:],0,1)
+    
+
+    #create coordinate variables
     phi = (yraw[:]*np.pi*2)/360.+np.pi/2.
     theta = (xraw[:]*np.pi*2)/360.
     c = zraw
