@@ -1,4 +1,4 @@
-from map3d import map3d_surface
+from map3d import topo_surface3d
 import numpy as np
 
 

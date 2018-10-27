@@ -5,7 +5,7 @@ from mayavi import mlab
 
 
 
-def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,zscale=500.,set_view=None):
+def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,opacity=1.0,quiver_mode='2darrow', quiver_scale=1, quiver_spacing=8., set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -51,14 +51,9 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
         #raise error if all three fields are not provided
         print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
     
-    #map data surface
-    if scalardata is not None:
-        m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
-        m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
-    else:
-        m = mlab.mesh(x_iso, y_iso, z_iso,vmin =vmin,vmax=vmax,opacity=data_alpha)
+    #do quiver plot 
+    mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, mode=quiver_mode,opacity=opacity,scale_factor=quiver_scale,mask_points=quiver_spacing)   
  
-
     #optional: change mayavi camera settings
     if set_view is None:
         mlab.view(distance = 'auto')
@@ -66,5 +61,5 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
         mlab.view(azimuth = set_view[0], elevation = set_view[1], distance = set_view[2], focalpoint = set_view[3])
 
 
-    return mlab
+    return mlab.gcf()
 

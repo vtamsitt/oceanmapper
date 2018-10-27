@@ -5,7 +5,7 @@ from mayavi import mlab
 
 
 
-def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,topo=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
+def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
     mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
     xdata = optional; (1D numpy array) longitude values for data array
@@ -26,11 +26,18 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
     #TODO expand/clean descriptions
         
     #load topo data
-    data = np.load('etopo1_30min.npz')
-    xraw = data['x']
-    yraw = data['y']
-    zraw = np.swapaxes(data['z'][:,:],0,1)
-    zraw[zraw>0]=0.
+    if topo_x is not None and topo_y is not None and topo_z is not None:
+        xraw = topo_x
+        yraw = topo_y
+        zraw = topo_z
+
+    else:    
+        tfile = np.load('etopo1_30min.npz')
+        xraw = tfile['x']
+        yraw = tfile['y']
+        zraw = np.swapaxes(tfile['z'][:,:],0,1)
+    
+    
     phi = (yraw[:]*np.pi*2)/360.+np.pi/2.
     theta = (xraw[:]*np.pi*2)/360.
     c = zraw
@@ -117,11 +124,11 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
             x_iso,z_iso = np.meshgrid(xdata,zdata)
             z_iso =-z_iso/zscale 
         
-    if scalardata is not None:
-        m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
-        m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
-    else:
-        m = mlab.mesh(x_iso, y_iso, z_iso,vmin =vmin,vmax=vmax,opacity=data_alpha)
+        if scalardata is not None:
+            m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
+            m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+        else:
+            m = mlab.mesh(x_iso, y_iso, z_iso,vmin =vmin,vmax=vmax,opacity=data_alpha)
              
     #optional: change mayavi camera settings
     if set_view is None:
@@ -131,4 +138,160 @@ def map3d_surface(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=Non
 
 
     return mlab
+
+
+def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,zscale=500.,set_view=None):
+    """
+    fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    xdata: 1D numpy array; longitude values for data array
+    ydata: 1D numpy array; latitude values for data array
+    zdata: 1D numpy array; depth values for data array
+    scalardata: 2D numpy array, optional; 2D scalar field to plot colors on surface
+    vmin: float, optional; colorbar minimum for data
+    vmax: float, optional; colorbar maximum for data
+    data_cmap: string, optional; colormap for data surface, default is blue-red
+    data_alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
+    set_view: array_like, optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
+    """
+        
+    
+    #make figure
+    if fig is None: 
+        mlab.figure(size = (1024,768),bgcolor = (1,1,1), fgcolor = (0.5, 0.5, 0.5))
+        mlab.clf()
+    else:
+        mlab.figure(figure=fig)
+    
+    #do coordinate transformation
+    if xdata is not None and ydata is not None and zdata is not None:
+        #TODO add an error message if not all data fields are provided
+        #prep data grid
+        phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
+
+        if mode is 'sphere':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
+            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
+        elif mode is 'cylinder':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
+            z_iso = zdata/zscale
+
+        elif mode is 'rectangle':
+            y_iso,z_iso = np.meshgrid(ydata,zdata)
+            x_iso,z_iso = np.meshgrid(xdata,zdata)
+            z_iso =-z_iso/zscale
+    else:
+        #raise error if all three fields are not provided
+        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+    
+    #map data surface
+    if scalardata is not None:
+        m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
+        m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+
+
+def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,quiver_color=(0,0,0),opacity=1.0,quiver_mode='2darrow', quiver_scale=1, quiver_spacing=8., set_view=None):
+    """
+    fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    xdata: 1D numpy array; longitude values for data array
+    ydata: 1D numpy array; latitude values for data array
+    zdata: 1D numpy array; depth values for data array
+    scalardata: 2D numpy array, optional; 2D scalar field to plot colors on surface
+    vmin: float, optional; colorbar minimum for data
+    vmax: float, optional; colorbar maximum for data
+    data_cmap: string, optional; colormap for data surface, default is blue-red
+    data_alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
+    set_view: array_like, optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
+    """
+        
+    
+    #make figure
+    if fig is None: 
+        mlab.figure(size = (1024,768),bgcolor = (1,1,1))
+        mlab.clf()
+    else:
+        mlab.figure(figure=fig,bgcolor = (1,1,1))
+    
+    #do coordinate transformation
+    if xdata is not None and ydata is not None and zdata is not None:
+        #TODO add an error message if not all data fields are provided
+        #prep data grid
+        phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
+
+        if mode is 'sphere':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
+            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
+        elif mode is 'cylinder':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
+            z_iso = zdata/zscale
+
+        elif mode is 'rectangle':
+            y_iso,z_iso = np.meshgrid(ydata,zdata)
+            x_iso,z_iso = np.meshgrid(xdata,zdata)
+            z_iso =-z_iso/zscale
+    else:
+        #raise error if all three fields are not provided
+        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+    
+    #do quiver plot 
+    mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=quiver_color,mode=quiver_mode,opacity=opacity,scale_factor=quiver_scale,mask_points=quiver_spacing)   
+ 
+    #optional: change mayavi camera settings
+
+
+def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.1,tube_sides=15,set_view=None):
+    """
+    fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    xdata: 1D numpy array; longitude values for data array
+    ydata: 1D numpy array; latitude values for data array
+    zdata: 1D numpy array; depth values for data array
+    scalardata: 2D numpy array, optional; 2D scalar field to plot colors on surface
+    vmin: float, optional; colorbar minimum for data
+    vmax: float, optional; colorbar maximum for data
+    data_cmap: string, optional; colormap for data surface, default is blue-red
+    data_alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
+    set_view: array_like, optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
+    """
+        
+    
+    #make figure
+    if fig is None: 
+        mlab.figure(size = (1024,768),bgcolor = (1,1,1), fgcolor = (0.5, 0.5, 0.5))
+        mlab.clf()
+    else:
+        mlab.figure(figure=fig,bgcolor = (1,1,1))
+    
+    #do coordinate transformation
+
+    if xdata is not None and ydata is not None and zdata is not None:
+        phi_iso, theta_iso = np.meshgrid(((lats_plot*np.pi*2)/360.)+np.pi/2.,(lons_plot*np.pi*2)/360.)
+
+        # Create variable dimensions
+        if mode == 'sphere':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
+            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
+        elif mode == 'cylinder':
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
+            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
+            z_iso = -zdata/zscale
+        elif mode == 'rectangle':
+            x_iso = xdata
+            y_iso = ydata
+            z_iso =-zdata/zscale
+    else:
+        #raise error if all three fields are not provided
+        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+    
+
+    #map data surface
+    if scalardata is not None:
+        mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,colormap=data_cmap,vmin=vmin,vmax=vmax)
+
 
