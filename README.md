@@ -5,3 +5,5 @@ The module map3d takes ETOPO1 land surface topography and ocean bathymetry (doi:
 
 The key functionality of the code is to take the input x,y,z data values and convert them to the correct coordinate system for the chosen mode, before implementing a mayavi plotting function. 
 
+
+![alt text](https://raw.githubusercontent.com/vtamsitt/oceanmapper/master/examples/vertical_sections.png)
