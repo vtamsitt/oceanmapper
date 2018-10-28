@@ -297,7 +297,7 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color
     #optional: change mayavi camera settings
 
 
-def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.1,tube_sides=15,set_view=None):
+def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.1,tube_sides=15,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -325,7 +325,7 @@ def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=
     #do coordinate transformation
 
     if xdata is not None and ydata is not None and zdata is not None:
-        phi_iso, theta_iso = np.meshgrid(((lats_plot*np.pi*2)/360.)+np.pi/2.,(lons_plot*np.pi*2)/360.)
+        phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
 
         # Create variable dimensions
         if mode == 'sphere':
@@ -348,5 +348,7 @@ def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=
     #map data surface
     if scalardata is not None:
         mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,colormap=data_cmap,vmin=vmin,vmax=vmax)
-
+    
+    else:
+        mlab.plot3d(x_iso,y_iso,z_iso, opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,colormap=data_cmap,vmin=vmin,vmax=vmax)
 
