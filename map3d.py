@@ -297,7 +297,7 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color
     #optional: change mayavi camera settings
 
 
-def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.1,tube_sides=15,set_view=None):
+def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.01,tube_sides=15,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
