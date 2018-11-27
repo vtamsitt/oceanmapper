@@ -37,6 +37,14 @@ def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscal
     theta=np.append(theta,theta[0])
     c = np.concatenate((c,np.expand_dims(c[0,:],axis=0)),axis=0)
 
+    if topo_vmin is None:
+        tvmin = 0
+    else:
+        tvmin = topo_vmin
+    if topo_vmax is None:
+        tvmax = 7000
+    else:
+        tvmax = topo_vmax
    
     if topo_limits is not None:
         phi_1 = topo_limits[2]
@@ -190,7 +198,7 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
     return mlab
 
 
-def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,zscale=500.,set_view=None):
+def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_color=(0.5,0.5,0.5),data_alpha=1,zscale=500.,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -201,6 +209,7 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
     vmin: float, optional; colorbar minimum for data
     vmax: float, optional; colorbar maximum for data
     data_cmap: string, optional; colormap for data surface, default is blue-red
+    data_color: triplet of floats ranging from 0 to 1, optional; sets color of surface, overrides colormap when scalardata is not included
     data_alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
     set_view: array_like, optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
     """
@@ -241,8 +250,11 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
         m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
         m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
 
+    else:
+        m = mlab.mesh(x_iso, y_iso, z_iso,color=data_color,vmin =vmin,vmax=vmax,opacity=data_alpha)
+        m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
 
-def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color=(0,0,0),alpha=1.0,vector_mode='2darrow', scale=1, spacing=8., set_view=None):
+def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,zscale=500.,vector_color=(0,0,0),vector_cmap=None,alpha=1.0,vector_mode='2darrow', scale=1, spacing=8., set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -292,12 +304,17 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,fig=None,zscale=500.,color
         print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
     
     #do quiver plot 
-    mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=color,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+    if scalardata is not None:
+        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, scalars=scalardata, scale_mode=None,colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+    elif vector_cmap is not None:
+        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+    else:
+        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=vector_color,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
  
     #optional: change mayavi camera settings
 
 
-def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=None,data_cmap='blue-red',data_alpha=1,zscale=500.,tube_radius=0.01,tube_sides=15,set_view=None):
+def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=(0,0,0),data_cmap=None,data_alpha=1,zscale=500.,tube_radius=0.01,tube_sides=15,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
     mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
@@ -347,8 +364,8 @@ def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=
 
     #map data surface
     if scalardata is not None:
-        mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,colormap=data_cmap,vmin=vmin,vmax=vmax)
+        mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
     
     else:
-        mlab.plot3d(x_iso,y_iso,z_iso, opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,colormap=data_cmap,vmin=vmin,vmax=vmax)
+        mlab.plot3d(x_iso,y_iso,z_iso, opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
 
