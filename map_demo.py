@@ -1,4 +1,4 @@
-from map3d import topo_surface3d
+import map3d as omap
 import numpy as np
 
 
@@ -22,7 +22,7 @@ lon_min = 100
 lon_max = 150
 
 #run function
-mlab=map3d_surface(mode,xdata,ydata,zdata,scalardata,vmin=vmin,vmax=vmax,topo_limits=[lon_min, lon_max, lat_min, lat_max],topo_cmap_reverse=True)
+mlab=omap.topo_surface3d(mode,xdata,ydata,zdata,scalardata,vmin=vmin,vmax=vmax,topo_limits=[lon_min, lon_max, lat_min, lat_max],topo_cmap_reverse=True)
 mlab.show()
 
 
