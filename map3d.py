@@ -147,7 +147,8 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
     elif mode is 'rectangle':
         y, x = np.meshgrid(yraw[phi_ind1:phi_ind2],xraw[theta_ind1:theta_ind2])
         z = c/zscale
-    
+    else:
+        print('mode is not valid. Must be \'sphere\',\'cylinder\', or \'rectangle\'')    
     #make bathymetry mesh
     m = mlab.mesh(x, y, z, scalars = -c, colormap=topo_cmap,vmin=tvmin,vmax=tvmax)
     
