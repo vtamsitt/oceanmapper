@@ -1,8 +1,8 @@
 #import dependent modules
 import sys
 import numpy as np
-from mayavi import mlab
-mlab.init_notebook() #allows code to run within jupyter notebook
+#from mayavi import mlab
+#mlab.init_notebook() #allows code to run within jupyter notebook
 
 def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
@@ -171,7 +171,7 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
         phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
  
         if mode is 'sphere':
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
             y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
             z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
         elif mode is 'cylinder':
@@ -185,10 +185,10 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
             z_iso =-z_iso/zscale 
         
         if scalardata is not None:
-            m = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
-            m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+            m1 = mlab.mesh(x_iso, y_iso, z_iso,scalars=scalardata,colormap=data_cmap,vmin =vmin,vmax=vmax,opacity=data_alpha)
+            m1.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
         else:
-            m = mlab.mesh(x_iso, y_iso, z_iso,vmin =vmin,vmax=vmax,opacity=data_alpha)
+            m1 = mlab.mesh(x_iso, y_iso, z_iso,vmin =vmin,vmax=vmax,opacity=data_alpha)
              
     #optional: change mayavi camera settings
     if set_view is None:
@@ -232,7 +232,7 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
         phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
 
         if mode is 'sphere':
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
             y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
             z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
         elif mode is 'cylinder':
@@ -291,7 +291,7 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,z
         phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
 
         if mode is 'sphere':
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -depth_h/zscale)
+            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
             y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
             z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
         elif mode is 'cylinder':
