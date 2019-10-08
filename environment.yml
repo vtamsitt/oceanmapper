@@ -9,6 +9,7 @@ dependencies:
     - nbgitpuller 
     - pandas
     - matplotlib
+    - vtk
     - mayavi
     - ipython
     - ipywidgets
