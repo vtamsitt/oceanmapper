@@ -10,6 +10,10 @@ dependencies:
   - ipyevents
   - vtk=8.1.*
   - mayavi=4.6.*
+  - jupyter=1.0.*
+  - jupyter-client=5.3.*      
+  - jupyter-console=5.2.*      
+  - jupyter-core=4.5.*
   - pip
   - pip:
 
