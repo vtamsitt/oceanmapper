@@ -197,7 +197,7 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
         mlab.view(azimuth = set_view[0], elevation = set_view[1], distance = set_view[2], focalpoint = set_view[3])
 
 
-    return mlab
+    return m
 
 
 def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_color=(0.5,0.5,0.5),data_alpha=1,zscale=500.,set_view=None):
