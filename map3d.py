@@ -5,11 +5,11 @@ from mayavi import mlab
 
 def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     """
-    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'sphere' or 'cylinder'
     topo: array_like, optional; input topography file, default is etopo 30 
 ##TODO: need to define sign of topography 
     topo_limits: array_like, optional; longitude and latitude limits for 3d topography plot [lon min, lon max, lat min, lat max], longitudes range -180 to 180, latitude -90 to 90, default is entire globe
-    zscale: scalar, optional; change vertical scaling for plotting, default is 500
+    zscale: scalar, optional; change vertical scaling for plotting, such that the vertical axis is scaled as topo_z/zscale (assumes topo_z units are m); default zscale is 500
     topo_cmap: string, optional; set colormap for topography, default is bone 
     topo_cmap_reverse: string, optional; reverse topography colormap, default is false
     land_constant: string optional; if True, land is set to one colour, default is False
@@ -65,7 +65,7 @@ def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscal
 
 def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
     '''
-    mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'sphere' or 'cylinder'
     xdata = optional; (1D numpy array) longitude values for data array
     ydata = optional; (1D numpy array) latitude values for data array
     zdata = optional; (1D numpy array) depth values for data array
@@ -76,7 +76,7 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
     data_alpha = (float or int) opacity for data surface from 0 to 1, default is 1
     topo = optional; input topography file, default is etopo 30 
     topo_limits = optional; longitude and latitude limits for 3d topography plot [lon_min, lon_max, lat_min, lat_max], longitudes range -180 to 180, latitude -90 to 90, default is entire globe
-    zscale = optional; change vertical scaling for plotting, default is 500
+    zscale: scalar, optional; change vertical scaling for plotting, such that the vertical axis is scaled as topo_z/zscale (assumes topo_z units are m); default zscale is 500 
     topo_cmap = optional; default is bone 
     topo_cmap_reverse = optional; reverse topography colormap, default is false
     set_view = optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
@@ -202,13 +202,14 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
 def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_color=(0.5,0.5,0.5),data_alpha=1,zscale=500.,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
-    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'sphere' or 'cylinder'
     xdata: 1D numpy array; longitude values for data array
     ydata: 1D numpy array; latitude values for data array
     zdata: 1D numpy array; depth values for data array
     scalardata: 2D numpy array, optional; 2D scalar field to plot colors on surface
     vmin: float, optional; colorbar minimum for data
     vmax: float, optional; colorbar maximum for data
+    zscale: scalar, optional; change vertical scaling for plotting, such that the vertical axis is scaled as topo_z/zscale (assumes topo_z units are m); default zscale is 500 
     data_cmap: string, optional; colormap for data surface, default is blue-red
     data_color: triplet of floats ranging from 0 to 1, optional; sets color of surface, overrides colormap when scalardata is not included
     data_alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
@@ -258,13 +259,14 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
 def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,zscale=500.,vector_color=(0,0,0),vector_cmap=None,alpha=1.0,vector_mode='2darrow', scale=1, spacing=8., set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
-    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'sphere' or 'cylinder'
     xdata: 1D array; longitude values for data array
     ydata: 1D array; latitude values for data array
     zdata: 1D array; depth values for data array
     udata: 2D or 3D array; u vector component
     vdata: 2D or 3D array; v vector component
     wdata: 2D or 3D array; w vector component
+    zscale: scalar, optional; change vertical scaling for plotting, such that the vertical axis is scaled as topo_z/zscale (assumes topo_z units are m); default zscale is 500 
     vector_mode: string, optional; style of vector plot
     color: colormap or rgb triplet,optional; color of quiver plot default is black (0,0,0). 
     alpha: float or int, optional; opacity for data surface from 0 to 1, default is 1
@@ -318,11 +320,12 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,z
 def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=(0,0,0),data_cmap=None,data_alpha=1,zscale=500.,tube_radius=0.01,tube_sides=15,set_view=None):
     """
     fig: integer or string, optional. Figure key will plot data on corresponding mlab figure, if it exists, or create a new one
-    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
+    mode: string; coordinate system of 3D projection. Options are 'rectangle' (default), 'sphere' or 'cylinder'
     xdata: 1D array; longitude values for data array
     ydata: 1D array; latitude values for data array
     zdata: 1D array; depth values for data array
     scalardata: 1D array, optional; 1D scalar field to plot colors along trajectoy
+    zscale: scalar, optional; change vertical scaling for plotting, such that the vertical axis is scaled as topo_z/zscale (assumes topo_z units are m); default zscale is 500 
     vmin: float, optional; colorbar minimum for data
     vmax: float, optional; colorbar maximum for data
     data_cmap: string, optional; colormap for data surface, default is blue-red
