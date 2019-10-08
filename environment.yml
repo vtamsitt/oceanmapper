@@ -10,7 +10,8 @@ dependencies:
   - ipyevents
   - vtk=8.1.*
   - mayavi=4.6.*
-  - jupyter=1.0.*
+  - jupyter
+  - jupyter_contrib_nbextensions
   - pip
   - pip:
 
