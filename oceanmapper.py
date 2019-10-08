@@ -1,7 +1,7 @@
 #import dependent modules
 import sys
 import numpy as np
-#from mayavi import mlab
+from mayavi import mlab
 #mlab.init_notebook() #allows code to run within jupyter notebook
 
 def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
