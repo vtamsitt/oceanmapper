@@ -8,6 +8,7 @@ dependencies:
   - ipython
   - ipywidgets
   - ipyevents
+  - vtk=8.1.*
   - mayavi=4.6.*
   - pip
   - pip:
