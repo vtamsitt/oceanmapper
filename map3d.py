@@ -64,7 +64,7 @@ def topography3d(mode,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscal
 
 
 def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=None,vmax=None,data_cmap='blue-red',data_alpha=1,topo_x=None,topo_y=None,topo_z=None,topo_limits=None,zscale=500.,topo_vmin=None,topo_vmax=None,topo_cmap='bone',topo_cmap_reverse=False,land_constant=False,land_color=(0.7,0.7,0.7),set_view=None):
-    """
+    '''
     mode = (string) coordinate system of 3D projection. Options are 'rectangle' (default), 'spherical' or 'cylindrical'
     xdata = optional; (1D numpy array) longitude values for data array
     ydata = optional; (1D numpy array) latitude values for data array
@@ -80,7 +80,7 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
     topo_cmap = optional; default is bone 
     topo_cmap_reverse = optional; reverse topography colormap, default is false
     set_view = optional; set the mayavi camera angle with input [azimuth, elevation, distance, focal point], default is 
-    """
+    '''
     #TODO expand/clean descriptions
         
     #load topo data
