@@ -1,4 +1,4 @@
 #!/bin/bash
 
-jupyter nbextension install --py mayavi 
-jupyter nbextension enable --py mayavi 
+jupyter nbextension install --py mayavi --sys-prefix 
+jupyter nbextension enable --py mayavi --sys-prefix
