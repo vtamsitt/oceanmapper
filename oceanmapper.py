@@ -96,12 +96,14 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
         yraw = tfile['y']
         zraw = np.swapaxes(tfile['z'][:,:],0,1)
     
+    if land_constant is True:
+        zraw[zraw>0]=0. 
     
     phi = (yraw[:]*np.pi*2)/360.+np.pi/2.
     theta = (xraw[:]*np.pi*2)/360.
     c = zraw
     theta=np.append(theta,theta[0])
-    c = np.concatenate((c,np.expand_dims(c[0,:],axis=0)),axis=0)
+    #c = np.concatenate((c,np.expand_dims(c[0,:],axis=0)),axis=0)
 
     if topo_limits is not None:
         phi_1 = topo_limits[2]
@@ -165,23 +167,28 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
 
     #optional: plot constant color on land
     if land_constant is True:
-        sl = mlab.mesh(x, y, z,mask = c<0,color =land_color)
+        sl = mlab.mesh(x, y, z,mask = z<0,color =land_color)
 
 
     #optional: plot data surface
     if xdata is not None and ydata is not None and zdata is not None:
         #TODO add an error message if not all data fields are provided
         #prep data grid
-        phi_iso, theta_iso = np.meshgrid(((ydata*np.pi*2)/360.)+np.pi/2.,(xdata*np.pi*2)/360.)
+        phi_iso  = (ydata*np.pi*2)/360. + np.pi/2.
+        theta_iso = (xdata*np.pi*2)/360.
  
         if mode is 'sphere':
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1]) * (1 -zdata/zscale)
-            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1]) * (1 -zdata/zscale)
-            z_iso = np.cos(phi_iso) * (1 -zdata/zscale)
+            PHI_ISO, Z_ISO = np.meshgrid(phi_iso,zdata)
+            THETA_ISO, Z_ISO = np.meshgrid(theta_iso,zdata)
+            x_iso = np.sin(PHI_ISO) * np.cos(THETA_ISO[::-1]) * (1 -Z_ISO/zscale)
+            y_iso = np.sin(PHI_ISO) * np.sin(THETA_ISO[::-1]) * (1 -Z_ISO/zscale)
+            z_iso = np.cos(PHI_ISO) * (1 -Z_ISO/zscale)
         elif mode is 'cylinder':
-            x_iso = np.sin(phi_iso) * np.cos(theta_iso[::-1])
-            y_iso = np.sin(phi_iso) * np.sin(theta_iso[::-1])
-            z_iso = zdata/zscale
+            PHI_ISO, Z_ISO = np.meshgrid(phi_iso,zdata)
+            THETA_ISO, Z_ISO = np.meshgrid(theta_iso,zdata)
+            x_iso = np.sin(PHI_ISO) * np.cos(THETA_ISO[::-1])
+            y_iso = np.sin(PHI_ISO) * np.sin(THETA_ISO[::-1])
+            z_iso = -Z_ISO/zscale
     
         elif mode is 'rectangle':
             y_iso,z_iso = np.meshgrid(ydata,zdata)
@@ -260,6 +267,8 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
     else:
         m = mlab.mesh(x_iso, y_iso, z_iso,color=data_color,vmin =vmin,vmax=vmax,opacity=data_alpha)
         m.module_manager.scalar_lut_manager.lut.nan_color = [0,0,0,0]
+    
+    return m
 
 def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,zscale=500.,vector_color=(0,0,0),vector_cmap=None,alpha=1.0,vector_mode='2darrow', scale=1, spacing=8., set_view=None):
     """
@@ -313,14 +322,15 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,z
     
     #do quiver plot 
     if scalardata is not None:
-        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, scalars=scalardata, scale_mode=None,colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+        m = mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, scalars=scalardata, scale_mode=None,colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
     elif vector_cmap is not None:
-        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+        m = mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, colormap=vector_cmap,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
     else:
-        mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=vector_color,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
- 
+        m = mlab.quiver3d(x_iso, y_iso, z_iso, udata, vdata, wdata, color=vector_color,mode=vector_mode,opacity=alpha,scale_factor=scale,mask_points=spacing)   
+     
+  
     #optional: change mayavi camera settings
-
+    return m
 
 def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=None,color=(0,0,0),data_cmap=None,data_alpha=1,zscale=500.,tube_radius=0.01,tube_sides=15,set_view=None):
     """
@@ -373,8 +383,9 @@ def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=
 
     #map data surface
     if scalardata is not None:
-        mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
+        m = mlab.plot3d(x_iso,y_iso,z_iso, scalardata,opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
     
     else:
-        mlab.plot3d(x_iso,y_iso,z_iso, opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
-
+        m = mlab.plot3d(x_iso,y_iso,z_iso, opacity=data_alpha,tube_radius=tube_radius,tube_sides=tube_sides,color=color,vmin=vmin,vmax=vmax)
+    
+    return m
