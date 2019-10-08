@@ -132,8 +132,8 @@ def topo_surface3d(mode,xdata=None,ydata=None,zdata=None,scalardata=None,vmin=No
         tvmax = topo_vmax
     
     #make figure
-    mlab.figure(size = (1024,768),bgcolor = (1,1,1), fgcolor = (0.5, 0.5, 0.5))
-    mlab.clf()
+    #mlab.figure(size = (1024,768),bgcolor = (1,1,1), fgcolor = (0.5, 0.5, 0.5))
+    #mlab.clf()
     # Plot Bathymetry mesh
     if mode is 'sphere':
         x = np.sin(phi) * np.cos(theta[::-1]) * (1 + c/zscale)
