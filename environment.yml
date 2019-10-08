@@ -1,17 +1,15 @@
-name: example-environment
+name: mayavi-environment
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python=2.7
   - numpy
+  - matplotlib
+  - ipython
+  - ipywidgets
+  - ipyevents
+  - mayavi=4.6.*
   - pip
   - pip:
-    - nbgitpuller 
-    - pandas
-    - matplotlib
-    - vtk
-    - mayavi
-    - ipython
-    - ipywidgets
-    - ipyevents
+
     
