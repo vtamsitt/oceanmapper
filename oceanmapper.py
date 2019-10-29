@@ -257,7 +257,7 @@ def surface3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=Non
             z_iso =-z_iso/zscale
     else:
         #raise error if all three fields are not provided
-        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+        print('ERROR: not all data fields are provided. Must provide 1D data x, y and z data points')  
     
     #map data surface
     if scalardata is not None:
@@ -318,7 +318,7 @@ def vector3d(mode,xdata,ydata,zdata,udata,vdata,wdata,scalardata=None,fig=None,z
             z_iso =-z_iso/zscale
     else:
         #raise error if all three fields are not provided
-        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+        print('ERROR: not all data fields are provided. Must provide 1D data x, y and z data points')  
     
     #do quiver plot 
     if scalardata is not None:
@@ -378,7 +378,7 @@ def trajectory3d(mode,xdata,ydata,zdata,fig=None,scalardata=None,vmin=None,vmax=
             z_iso =-zdata/zscale
     else:
         #raise error if all three fields are not provided
-        print 'ERROR: not all data fields are provided. Must provide 1D data x, y and z data points'  
+        print('ERROR: not all data fields are provided. Must provide 1D data x, y and z data points')  
     
 
     #map data surface
